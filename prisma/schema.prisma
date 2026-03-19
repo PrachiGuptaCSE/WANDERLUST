@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+model User{
+
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  email String @unique 
+  name String?
+  recipes Recipes[] 
+  likedRecipes LikedRecipes[]
+}
+model Recipes{
+  id Int @id @default(autoincrement())
+  recipeName String 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  ingeridients Ingeridients[]
+  createdBy User @relation(fields: [creatorID],references: [id])
+  creatorID Int 
+  tags Tags[]
+  choice Choice @default(VEG)
+  likedRecipes LikedRecipes[]
+}
+enum Tags{
+  SPICY
+  VEGAN
+  VEGETARIAN
+  GULTEN_FREE 
+  QUICK
+  ITALIAN
+  INDIAN
+  MEXCIAN
+  CHINESE
+  DESSERT
+  BREAKFAST
+  HIGH_PROTEIN 
+  LOW_CARBS
+  HEALTHY
+}
+model LikedRecipes{
+  id Int @id @default(autoincrement())
+  userId Int
+  recipeId Int
+  likedAt DateTime @default(now())
+  user User @relation(fields:[userId], references:[id])
+  recipe Recipes @relation(fields:[recipeId], references:[id])
+  @@unique([userId,recipeId])
+  @@index([userId,likedAt])
+}
+model Ingeridients{
+  id Int @id @default(autoincrement())
+  recipeId Int
+  name String
+  quantity Float
+  unit String
+  recipe Recipes @relation(fields:[recipeId], references:[id], onDelete: Cascade)
+  @@index([recipeId])
+}
+enum Choice{
+  VEG
+  NONVEG
+}
