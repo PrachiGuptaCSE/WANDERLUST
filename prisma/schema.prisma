@@ -29,6 +29,7 @@ model Recipes{
   createdBy User @relation(fields: [creatorID],references: [id])
   creatorID Int 
   tags Tags[]
+  recipe String
   choice Choice @default(VEG)
   likedRecipes LikedRecipes[]
 }
